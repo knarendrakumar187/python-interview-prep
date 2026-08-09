@@ -1,4 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-  <rect width="48" height="48" rx="4" fill="#0f6e56"/>
-  <text x="24" y="32" font-family="Georgia, serif" font-size="20" font-weight="700" fill="white" text-anchor="middle">Py</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none">
+  <rect width="40" height="40" rx="8" fill="#0f6e56"/>
+  <rect x="1.5" y="1.5" width="37" height="37" rx="6.5" stroke="#8ecbb4" stroke-opacity="0.35"/>
+  <path d="M12 30V11.5h9.2c4.05 0 6.55 2.2 6.55 5.55 0 3.45-2.55 5.7-6.7 5.7H16.4V30H12zm4.4-11.05h4.55c1.85 0 2.95-1 2.95-2.45s-1.05-2.4-2.9-2.4H16.4v4.85z" fill="#ffffff"/>
+  <path d="M27.2 22.2l3.3 3.3-3.3 3.3" stroke="#b8e0d0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

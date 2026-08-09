@@ -1,6 +1,7 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import questions from "../data/questions.json";
+import Logo from "./Logo.jsx";
 import { useProgress, completedCount, streak } from "../lib/progress.js";
 
 const GITHUB_URL = "https://github.com/knarendrakumar187/python-interview-prep";
@@ -66,18 +67,8 @@ export default function Layout({ children }) {
     <div className="min-h-screen flex">
       {/* Desktop sidebar */}
       <aside className="hidden md:flex w-56 shrink-0 flex-col bg-[var(--color-ink)] text-[#c5d0cb] fixed inset-y-0">
-        <div className="px-5 h-16 flex items-center gap-3 border-b border-white/10">
-          <div className="w-8 h-8 rounded-[4px] bg-[var(--color-accent)] text-white font-display font-bold text-sm flex items-center justify-center">
-            Py
-          </div>
-          <div>
-            <div className="text-white font-display font-bold leading-none tracking-tight">
-              PyPrep
-            </div>
-            <div className="text-[10px] text-[#8a9892] mt-1 tracking-wide uppercase">
-              Interview prep
-            </div>
-          </div>
+        <div className="px-4 h-16 flex items-center border-b border-white/10">
+          <Logo tone="dark" size="md" showTagline />
         </div>
 
         <nav className="flex-1 px-3 py-5 space-y-0.5">
@@ -131,13 +122,8 @@ export default function Layout({ children }) {
       </aside>
 
       {/* Mobile top bar — brand + progress only */}
-      <header className="md:hidden fixed top-0 inset-x-0 z-40 bg-[var(--color-ink)] text-white px-4 h-12 flex items-center justify-between safe-top">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-[3px] bg-[var(--color-accent)] text-[10px] font-display font-bold flex items-center justify-center">
-            Py
-          </div>
-          <span className="font-display font-bold text-sm">PyPrep</span>
-        </div>
+      <header className="md:hidden fixed top-0 inset-x-0 z-40 bg-[var(--color-ink)] text-white px-3 h-12 flex items-center justify-between safe-top">
+        <Logo tone="dark" size="sm" />
         <div className="text-[11px] font-mono text-[#8ecbb4]">
           {done}/{questions.length} · {stk}d
         </div>
@@ -182,15 +168,8 @@ export default function Layout({ children }) {
         <footer className="border-t border-[var(--color-line)] bg-[var(--color-surface)] mt-auto">
           <div className="max-w-5xl mx-auto px-3 sm:px-4 md:px-8 py-6 md:py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-[3px] bg-[var(--color-accent)] text-white text-[10px] font-display font-bold flex items-center justify-center">
-                  Py
-                </div>
-                <span className="font-display font-bold text-[var(--color-ink)]">
-                  PyPrep
-                </span>
-              </div>
-              <p className="text-xs text-[var(--color-ink-soft)] mt-2 leading-relaxed max-w-md">
+              <Logo tone="light" size="md" showTagline />
+              <p className="text-xs text-[var(--color-ink-soft)] mt-3 leading-relaxed max-w-md">
                 {questions.length} Python interview questions · 30-day plan ·
                 patterns, visuals, and in-browser practice.
               </p>
