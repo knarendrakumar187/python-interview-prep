@@ -25,13 +25,23 @@ export default function QuestionDetail() {
   const [view, setView] = useState("code");
   const [showViz, setShowViz] = useState(false);
   const [showPractice, setShowPractice] = useState(false);
+  const [noteDraft, setNoteDraft] = useState("");
 
   useEffect(() => {
     setTab("optimized");
     setView("code");
     setShowViz(false);
     setShowPractice(false);
+    setNoteDraft(progressStore.get().notes[qid] || "");
   }, [qid]);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const current = progressStore.get().notes[qid] || "";
+      if (noteDraft !== current) progressStore.setNote(qid, noteDraft);
+    }, 400);
+    return () => clearTimeout(t);
+  }, [noteDraft, qid]);
 
   const q = useMemo(() => questions.find((x) => x.id === qid), [qid]);
   if (!q) {
@@ -317,8 +327,8 @@ export default function QuestionDetail() {
       <section className="panel p-4 sm:p-6">
         <h2 className="font-display font-bold text-lg mb-2">Notes</h2>
         <textarea
-          value={p.notes[q.id] || ""}
-          onChange={(e) => progressStore.setNote(q.id, e.target.value)}
+          value={noteDraft}
+          onChange={(e) => setNoteDraft(e.target.value)}
           placeholder="Write the trick in your own words…"
           rows={3}
           className="w-full text-sm p-3 border border-[var(--color-line)] bg-[var(--color-paper)] outline-none focus:border-[var(--color-accent)] resize-y rounded-[4px]"

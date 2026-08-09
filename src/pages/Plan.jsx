@@ -65,7 +65,7 @@ export default function Plan() {
                   </div>
                 </div>
                 <span className="text-[10px] uppercase tracking-wide font-semibold text-[var(--color-ink-soft)]">
-                  {qs[0].sectionName.split(" ")[0]}
+                  {qs[0]?.sectionName?.split(" ")[0] || "Day"}
                 </span>
               </div>
               <div className="space-y-0.5">

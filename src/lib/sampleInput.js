@@ -25,6 +25,27 @@ const SUDOKU = `[
 ]`;
 const DIJKSTRA = "{0: {1: 4, 2: 1}, 1: {3: 1}, 2: {1: 2, 3: 5}, 3: {}}";
 
+const LIST_NODE_HELPER = `class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def build(vals):
+    dummy = ListNode(0)
+    cur = dummy
+    for v in vals:
+        cur.next = ListNode(v)
+        cur = cur.next
+    return dummy.next
+
+def to_list(head):
+    out = []
+    while head:
+        out.append(head.val)
+        head = head.next
+    return out
+`;
+
 function argFor(name, index, title, params) {
   const p = name.trim().toLowerCase();
   const t = title.toLowerCase();
@@ -39,8 +60,15 @@ function argFor(name, index, title, params) {
   if (t.includes("tower of hanoi") || t.includes("hanoi")) {
     if (p === "n") return "3";
     if (p === "source" || p === "src" || p === "from_peg") return '"A"';
-    if (p === "target" || p === "dest" || p === "to_peg") return '"C"';
-    if (p === "aux" || p === "helper" || p === "via") return '"B"';
+    if (
+      p === "target" ||
+      p === "dest" ||
+      p === "destination" ||
+      p === "to_peg"
+    )
+      return '"C"';
+    if (p === "aux" || p === "auxiliary" || p === "helper" || p === "via")
+      return '"B"';
   }
 
   // --- explicit param names ---
@@ -112,6 +140,9 @@ function argFor(name, index, title, params) {
     if (t.includes("reverse digits") || t.includes("palindrome number"))
       return "121";
     if (t.includes("digit")) return "1234";
+    // generate binary strings of length N — keep N small for Visualize
+    if (t.includes("binary string") || t.includes("generate all binary"))
+      return "3";
     if (t.includes("binary")) return "10";
     if (t.includes("n-queens") || t.includes("queens")) return "4";
     if (
@@ -142,17 +173,19 @@ export function mainFunction(code) {
   return { name: preferred[1], params: preferred[2] };
 }
 
+/** Demo only for interactive DS classes — never helper classes like ListNode. */
 function classDemo(code) {
   const classes = [...code.matchAll(/^class\s+([A-Za-z_]\w*)/gm)].map(
     (m) => m[1]
   );
   if (classes.length === 0) return null;
-  const name =
-    classes.find((c) => /Opt$|Bf$/i.test(c)) ||
-    classes.find((c) => !/Node|ListNode/i.test(c)) ||
-    classes[classes.length - 1];
 
-  if (/Stack/i.test(name)) {
+  const name = classes.find((c) =>
+    /Stack|Queue|Priority|LRU|Cache/i.test(c)
+  );
+  if (!name) return null;
+
+  if (/Stack/i.test(name) && !/Priority/i.test(name)) {
     return [
       `s = ${name}()`,
       "s.push(10)",
@@ -188,86 +221,79 @@ function classDemo(code) {
       "print(cache.get(2))  # -1",
     ].join("\n");
   }
-  return `obj = ${name}()\nprint(obj)`;
+  return null;
 }
 
 /** Build a tiny ListNode helper + call for linked-list problems. */
 function linkedListDemo(fnName, params, title) {
-  const helper = `class ListNode:
-    def __init__(self, val=0, next=None):
-        self.val = val
-        self.next = next
-
-def build(vals):
-    dummy = ListNode(0)
-    cur = dummy
-    for v in vals:
-        cur.next = ListNode(v)
-        cur = cur.next
-    return dummy.next
-
-def to_list(head):
-    out = []
-    while head:
-        out.append(head.val)
-        head = head.next
-    return out
-`;
-
   const t = title.toLowerCase();
+  if (t.includes("merge k")) {
+    return (
+      LIST_NODE_HELPER +
+      `\nlists = [build([1, 4, 5]), build([1, 3, 4]), build([2, 6])]\nprint(to_list(${fnName}(lists)))\n`
+    );
+  }
   if (t.includes("merge two")) {
     return (
-      helper +
+      LIST_NODE_HELPER +
       `\nl1 = build([1, 2, 4])\nl2 = build([1, 3, 4])\nprint(to_list(${fnName}(l1, l2)))\n`
     );
   }
   if (t.includes("remove nth") || t.includes("nth node")) {
     return (
-      helper +
+      LIST_NODE_HELPER +
       `\nhead = build([1, 2, 3, 4, 5])\nprint(to_list(${fnName}(head, 2)))\n`
     );
   }
   if (t.includes("cycle")) {
     return (
-      helper +
+      LIST_NODE_HELPER +
       `\nhead = build([1, 2, 3, 4])\n# make a cycle: 4 -> 2\nnodes = []\ncur = head\nwhile cur:\n    nodes.append(cur)\n    cur = cur.next\nnodes[-1].next = nodes[1]\nprint(${fnName}(head))  # True\n`
     );
   }
   // reverse / middle / default
   return (
-    helper +
+    LIST_NODE_HELPER +
     `\nhead = build([1, 2, 3, 4, 5])\nresult = ${fnName}(head)\nprint(to_list(result) if hasattr(result, "val") or result is None or hasattr(result, "next") else result)\n`
   );
 }
 
 export function sampleCall(code, title) {
-  const demo = classDemo(code);
-  if (demo) return demo;
-
   const fn = mainFunction(code);
-  if (!fn) return "# Add a call to your code here — pick values that match the types";
+  const t = (title || "").toLowerCase();
+
+  // Prefer real solution functions over helper classes (ListNode, PopCount, …)
+  if (fn && /_opt$|_bf$/.test(fn.name)) {
+    // fall through to function / linked-list path
+  } else {
+    const demo = classDemo(code);
+    if (demo) return demo;
+  }
+
+  if (!fn) {
+    const demo = classDemo(code);
+    if (demo) return demo;
+    return "# Add a call to your code here — pick values that match the types";
+  }
 
   const params = fn.params
     .split(",")
     .map((p) => p.split("=")[0].trim())
     .filter((p) => p && p !== "self");
 
-  const t = title.toLowerCase();
   const looksLinked =
     params.some((p) => /^(head|l1|l2)$/i.test(p)) ||
-    t.includes("linked list");
+    t.includes("linked list") ||
+    (t.includes("merge k") && code.includes("ListNode")) ||
+    (t.includes("merge two") && code.includes("ListNode"));
 
-  if (looksLinked) {
+  if (looksLinked || (code.includes("ListNode") && /^(head|l1|l2|lists)$/i.test(params[0] || ""))) {
     return linkedListDemo(fn.name, params, title);
   }
 
-  // merge k lists of ListNodes — use plain nested lists if code expects ListNode, skip
-  if (t.includes("merge k") && code.includes("ListNode")) {
-    return (
-      `# This solution expects ListNode objects.\n` +
-      `# Open Practice and adapt, or visualize a simpler list question first.\n` +
-      `print("See Practice tab for a full demo")\n`
-    );
+  // Plain list-of-lists merge when solution doesn't use ListNode
+  if (t.includes("merge k") && !code.includes("ListNode")) {
+    return `print(${fn.name}([[1, 4, 5], [1, 3, 4], [2, 6]]))`;
   }
 
   const args = params.map((p, i) => argFor(p, i, title, params));
@@ -281,7 +307,9 @@ export function sampleCall(code, title) {
     t.includes("hourglass") ||
     t.includes("hollow square") ||
     t.includes("print all") ||
-    t.includes("fibonacci series")
+    t.includes("fibonacci series") ||
+    t.includes("tower of hanoi") ||
+    t.includes("hanoi")
   ) {
     return call;
   }

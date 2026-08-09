@@ -113,6 +113,15 @@ export default function CodeVisualizer({ code, initialCall }) {
   const [speed, setSpeed] = useState(700);
   const timer = useRef(null);
   const lineRefs = useRef({});
+  const alive = useRef(true);
+  const multiline = call.includes("\n");
+
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
+    };
+  }, []);
 
   const source = useMemo(() => `${code}\n\n${call}`, [code, call]);
   const lines = useMemo(() => source.split("\n"), [source]);
@@ -133,10 +142,12 @@ export default function CodeVisualizer({ code, initialCall }) {
       const py = await getPyodide();
       py.globals.set("USER_CODE", source);
       const result = JSON.parse(await py.runPythonAsync(TRACER_PY));
+      if (!alive.current) return;
       setTrace(result);
       setStatus("idle");
       if (!result.error && result.steps.length > 0) setPlaying(true);
     } catch (e) {
+      if (!alive.current) return;
       setTrace({ steps: [], output: "", error: String(e?.message || e) });
       setStatus("idle");
     }
@@ -181,16 +192,30 @@ export default function CodeVisualizer({ code, initialCall }) {
     <div className="space-y-3">
       {/* input row */}
       <div className="flex flex-col gap-2">
-        <div className="flex-1 flex items-center gap-2 bg-slate-900 rounded-[4px] px-3 ring-1 ring-slate-700 focus-within:ring-[var(--color-accent)] min-w-0">
-          <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold shrink-0">
+        <div
+          className={`flex-1 flex gap-2 bg-slate-900 rounded-[4px] px-3 ring-1 ring-slate-700 focus-within:ring-[var(--color-accent)] min-w-0 ${
+            multiline ? "items-start py-2" : "items-center"
+          }`}
+        >
+          <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold shrink-0 pt-2.5">
             input
           </span>
-          <input
-            value={call}
-            onChange={(e) => setCall(e.target.value)}
-            spellCheck={false}
-            className="flex-1 min-w-0 bg-transparent text-emerald-300 font-mono text-[12px] sm:text-[13px] py-2.5 outline-none"
-          />
+          {multiline ? (
+            <textarea
+              value={call}
+              onChange={(e) => setCall(e.target.value)}
+              spellCheck={false}
+              rows={Math.min(12, call.split("\n").length + 1)}
+              className="flex-1 min-w-0 bg-transparent text-emerald-300 font-mono text-[12px] sm:text-[13px] py-2 outline-none resize-y leading-relaxed"
+            />
+          ) : (
+            <input
+              value={call}
+              onChange={(e) => setCall(e.target.value)}
+              spellCheck={false}
+              className="flex-1 min-w-0 bg-transparent text-emerald-300 font-mono text-[12px] sm:text-[13px] py-2.5 outline-none"
+            />
+          )}
         </div>
         <button
           onClick={run}

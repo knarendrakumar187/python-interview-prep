@@ -19,7 +19,7 @@ export default function CodeBlock({ code }) {
     <div className="relative group">
       <button
         onClick={copy}
-        className="absolute top-2.5 right-2.5 text-[11px] px-2.5 py-1 rounded-md bg-slate-700/70 text-slate-200 opacity-0 group-hover:opacity-100 transition hover:bg-slate-600"
+        className="absolute top-2.5 right-2.5 text-[11px] px-2.5 py-1 rounded-md bg-slate-700/70 text-slate-200 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition hover:bg-slate-600"
       >
         {copied ? "Copied!" : "Copy"}
       </button>
