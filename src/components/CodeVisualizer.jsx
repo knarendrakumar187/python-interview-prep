@@ -216,8 +216,9 @@ export default function CodeVisualizer({ code, initialCall }) {
         <div className="bg-rose-50 text-rose-700 ring-1 ring-rose-200 rounded-[6px] p-3 text-sm font-mono">
           {trace.error}
           <div className="font-sans text-xs mt-1 text-rose-500">
-            Tip: edit the input above — e.g. pass a list [1, 2, 3] or a string
-            "abc" — and re-run.
+            Tip: the sample input type is wrong for this function. Use a list
+            like [1, 2, 3], a string like &quot;abc&quot;, or a number like 6 —
+            matching what the function expects — then re-run.
           </div>
         </div>
       )}
