@@ -9,6 +9,7 @@ import Concepts from "./pages/Concepts.jsx";
 import CoreSubjects from "./pages/CoreSubjects.jsx";
 import CoreSubject from "./pages/CoreSubject.jsx";
 import CoreConcept from "./pages/CoreConcept.jsx";
+import CoreRevision from "./pages/CoreRevision.jsx";
 
 export default function App() {
   const location = useLocation();
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="/concepts" element={<Concepts />} />
           <Route path="/core" element={<CoreSubjects />} />
           <Route path="/core/:subjectId" element={<CoreSubject />} />
+          <Route path="/core/:subjectId/revision" element={<CoreRevision />} />
           <Route path="/core/:subjectId/:conceptId" element={<CoreConcept />} />
         </Routes>
       </ErrorBoundary>

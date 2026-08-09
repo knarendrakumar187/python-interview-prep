@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { JoinLab, SchedulerLab, OsiLab } from "./InteractiveLabs.jsx";
 
 function Shell({ title, children, caption }) {
   return (
@@ -699,18 +700,18 @@ const MAP = {
   er: Er,
   keys: Keys,
   normalization: Normalization,
-  joins: Joins,
+  joins: JoinLab,
   bplus: BPlus,
   acid: Acid,
   "deadlock-db": DeadlockDb,
   "process-states": ProcessStates,
   "process-thread": ProcessThread,
-  "cpu-schedule": CpuSchedule,
+  "cpu-schedule": SchedulerLab,
   "mutex-sem": MutexSem,
   "deadlock-os": DeadlockOs,
   paging: Paging,
   "page-replace": PageReplace,
-  osi: Osi,
+  osi: OsiLab,
   "tcp-udp": TcpUdp,
   "tcp-handshake": TcpHandshake,
   ip: Ip,
@@ -722,5 +723,9 @@ const MAP = {
 export default function ConceptVisual({ id }) {
   const Comp = MAP[id];
   if (!Comp) return null;
-  return <Comp />;
+  return (
+    <div className="space-y-3">
+      <Comp />
+    </div>
+  );
 }

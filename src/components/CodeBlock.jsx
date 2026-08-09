@@ -2,12 +2,22 @@ import { useMemo, useState } from "react";
 import Prism from "prismjs";
 import "prismjs/components/prism-python";
 import "prismjs/components/prism-sql";
+import "prismjs/components/prism-java";
+import "prismjs/components/prism-c";
+import "prismjs/components/prism-cpp";
 
 export default function CodeBlock({ code, language = "python" }) {
   const [copied, setCopied] = useState(false);
   const html = useMemo(() => {
     const grammar = Prism.languages[language] || Prism.languages.python;
-    return Prism.highlight(code, grammar, language);
+    try {
+      return Prism.highlight(code, grammar, language);
+    } catch {
+      return code
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
   }, [code, language]);
 
   const copy = async () => {

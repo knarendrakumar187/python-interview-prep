@@ -1,8 +1,9 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import questions from "../data/questions.json";
 import SUBJECTS from "../data/coreSubjects.js";
 import Logo from "./Logo.jsx";
+import CoreMegaMenu from "./core/CoreMegaMenu.jsx";
 import { useProgress, completedCount, streak } from "../lib/progress.js";
 
 const GITHUB_URL = "https://github.com/knarendrakumar187/python-interview-prep";
@@ -71,71 +72,6 @@ function navLabel(item) {
   return item.label;
 }
 
-function CoreSubjectsMenu({ pathname }) {
-  const active = pathname.startsWith("/core");
-  const [open, setOpen] = useState(active);
-
-  useEffect(() => {
-    if (active) setOpen(true);
-  }, [active]);
-
-  return (
-    <div className="mt-1">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className={`w-full flex items-center justify-between px-3 py-2 text-sm transition border-l-2 ${
-          active
-            ? "border-[var(--color-accent)] text-white bg-white/5 font-semibold"
-            : "border-transparent text-[#a7b5ae] hover:text-white hover:bg-white/5"
-        }`}
-      >
-        <span>Core Subjects</span>
-        <span
-          className={`text-[10px] transition-transform ${open ? "rotate-180" : ""}`}
-        >
-          ▾
-        </span>
-      </button>
-      {open && (
-        <div className="ml-2 mt-0.5 mb-1 space-y-0.5 border-l border-white/10">
-          <NavLink
-            to="/core"
-            end
-            className={({ isActive }) =>
-              `block pl-3 pr-2 py-1.5 text-xs transition ${
-                isActive
-                  ? "text-[#7dceb4] font-semibold"
-                  : "text-[#8a9892] hover:text-white"
-              }`
-            }
-          >
-            All subjects
-          </NavLink>
-          {SUBJECTS.map((s) => (
-            <NavLink
-              key={s.id}
-              to={`/core/${s.id}`}
-              className={({ isActive }) =>
-                `block pl-3 pr-2 py-1.5 text-xs transition ${
-                  isActive
-                    ? "text-[#7dceb4] font-semibold"
-                    : "text-[#8a9892] hover:text-white"
-                }`
-              }
-            >
-              {s.name}
-              <span className="block text-[10px] text-[#6a7872] font-normal truncate">
-                {s.fullName}
-              </span>
-            </NavLink>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 export default function Layout({ children }) {
   const p = useProgress();
   const done = completedCount(p);
@@ -148,12 +84,12 @@ export default function Layout({ children }) {
 
   return (
     <div className="min-h-screen flex">
-      <aside className="hidden md:flex w-60 shrink-0 flex-col bg-[var(--color-ink)] text-[#c5d0cb] fixed inset-y-0">
+      <aside className="hidden md:flex w-60 shrink-0 flex-col bg-[var(--color-ink)] text-[#c5d0cb] fixed inset-y-0 z-30">
         <div className="px-4 h-16 flex items-center border-b border-white/10">
           <Logo tone="dark" size="md" showTagline />
         </div>
 
-        <nav className="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto">
+        <nav className="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto overflow-x-visible">
           {NAV.filter((item) => item.to !== "/core").map((item) => (
             <NavLink
               key={item.to}
@@ -170,7 +106,7 @@ export default function Layout({ children }) {
               {navLabel(item)}
             </NavLink>
           ))}
-          <CoreSubjectsMenu pathname={pathname} />
+          <CoreMegaMenu />
         </nav>
 
         <div className="px-5 py-4 border-t border-white/10 text-xs space-y-3">

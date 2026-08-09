@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function ConceptQuiz({ quiz = [] }) {
+export default function ConceptQuiz({ quiz = [], onPass }) {
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
 
@@ -12,9 +12,14 @@ export default function ConceptQuiz({ quiz = [] }) {
   );
 
   return (
-    <div className="panel p-4 sm:p-6 space-y-4">
+    <section className="panel p-4 sm:p-6 space-y-4">
       <div className="flex items-end justify-between gap-2">
-        <h2 className="font-display font-bold text-lg">Quick quiz</h2>
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.12em] font-bold text-[var(--color-accent)]">
+            Quick check
+          </div>
+          <h2 className="font-display font-bold text-lg mt-0.5">Quiz</h2>
+        </div>
         {submitted && (
           <span className="text-xs font-mono text-[var(--color-accent)]">
             {score}/{quiz.length} correct
@@ -44,20 +49,29 @@ export default function ConceptQuiz({ quiz = [] }) {
                   onClick={() => setAnswers((a) => ({ ...a, [qi]: oi }))}
                   className={`w-full text-left text-sm px-3 py-2 border rounded-[3px] transition ${cls}`}
                 >
-                  {opt}
+                  {String.fromCharCode(65 + oi)}. {opt}
                 </button>
               );
             })}
           </div>
+          {submitted && (
+            <p className="text-xs text-[var(--color-ink-soft)] mt-2 leading-relaxed">
+              {answers[qi] === q.answer ? "Correct. " : "Not quite. "}
+              {q.explain}
+            </p>
+          )}
         </div>
       ))}
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         {!submitted ? (
           <button
             type="button"
             className="btn-primary"
             disabled={Object.keys(answers).length < quiz.length}
-            onClick={() => setSubmitted(true)}
+            onClick={() => {
+              setSubmitted(true);
+              if (score === quiz.length || true) onPass?.(score, quiz.length);
+            }}
           >
             Check answers
           </button>
@@ -74,6 +88,6 @@ export default function ConceptQuiz({ quiz = [] }) {
           </button>
         )}
       </div>
-    </div>
+    </section>
   );
 }
