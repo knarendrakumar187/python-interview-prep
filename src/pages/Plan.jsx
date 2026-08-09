@@ -18,8 +18,8 @@ export default function Plan() {
     <div className="fade-up">
       <h1 className="font-display text-3xl font-bold">30-Day Plan</h1>
       <p className="text-[var(--color-ink-soft)] text-sm mt-2 mb-8 max-w-2xl leading-relaxed">
-        Five questions a day. Miss a day — pick up where you left off. Slow and
-        steady beats cramming.
+        About five questions a day (Days 1–2 also include star patterns). Miss a
+        day — pick up where you left off. Slow and steady beats cramming.
       </p>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">

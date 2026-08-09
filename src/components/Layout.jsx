@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import questions from "../data/questions.json";
 import { useProgress, completedCount, streak } from "../lib/progress.js";
 
 const NAV = [
@@ -91,7 +92,7 @@ export default function Layout({ children }) {
         <div className="px-5 py-4 border-t border-white/10 text-xs space-y-2">
           <div className="flex justify-between">
             <span className="text-[#8a9892]">Solved</span>
-            <span className="text-white font-mono font-medium">{done}/150</span>
+            <span className="text-white font-mono font-medium">{done}/{questions.length}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-[#8a9892]">Streak</span>
@@ -100,7 +101,7 @@ export default function Layout({ children }) {
           <div className="h-1 bg-white/10 mt-1 overflow-hidden">
             <div
               className="h-full bg-[var(--color-accent)] transition-all"
-              style={{ width: `${(done / 150) * 100}%` }}
+              style={{ width: `${(done / questions.length) * 100}%` }}
             />
           </div>
         </div>
@@ -115,7 +116,7 @@ export default function Layout({ children }) {
           <span className="font-display font-bold text-sm">PyPrep</span>
         </div>
         <div className="text-[11px] font-mono text-[#8ecbb4]">
-          {done}/150 · {stk}d
+          {done}/{questions.length} · {stk}d
         </div>
       </header>
 

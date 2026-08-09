@@ -114,6 +114,15 @@ function argFor(name, index, title, params) {
     if (t.includes("digit")) return "1234";
     if (t.includes("binary")) return "10";
     if (t.includes("n-queens") || t.includes("queens")) return "4";
+    if (
+      t.includes("star pattern") ||
+      t.includes("pyramid") ||
+      t.includes("diamond") ||
+      t.includes("butterfly") ||
+      t.includes("hourglass") ||
+      t.includes("hollow square")
+    )
+      return "5";
     return "6";
   }
 
@@ -262,5 +271,19 @@ export function sampleCall(code, title) {
   }
 
   const args = params.map((p, i) => argFor(p, i, title, params));
-  return `print(${fn.name}(${args.join(", ")}))`;
+  const call = `${fn.name}(${args.join(", ")})`;
+  // Pattern printers already print rows — avoid an extra "None"
+  if (
+    t.includes("star pattern") ||
+    t.includes("pyramid") ||
+    t.includes("diamond") ||
+    t.includes("butterfly") ||
+    t.includes("hourglass") ||
+    t.includes("hollow square") ||
+    t.includes("print all") ||
+    t.includes("fibonacci series")
+  ) {
+    return call;
+  }
+  return `print(${call})`;
 }

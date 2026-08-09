@@ -39,7 +39,7 @@ export default function Dashboard() {
             </div>
             <h1 className="font-display text-2xl sm:text-3xl md:text-[2.35rem] leading-tight mt-2 font-bold">
               {finished
-                ? "All 150 questions complete."
+                ? `All ${questions.length} questions complete.`
                 : today >= dailyGoal
                 ? "Today’s goal is done."
                 : `${dailyGoal - today} more today to hit your goal`}
@@ -85,9 +85,9 @@ export default function Dashboard() {
 
       <div className="grid md:grid-cols-3 gap-4">
         <div className="panel p-6 flex flex-col items-center justify-center gap-3">
-          <ProgressRing value={done} max={150} label="complete" />
+          <ProgressRing value={done} max={questions.length} label="complete" />
           <div className="text-sm text-[var(--color-ink-soft)]">
-            {150 - done} left
+            {questions.length - done} left
           </div>
         </div>
 

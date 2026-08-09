@@ -1,4 +1,4 @@
-// The problem-solving pattern for each of the 150 questions, plus a
+// The problem-solving pattern for each question, plus a
 // beginner-friendly description of every pattern and how to recognise it.
 
 export const PATTERN_INFO = {
@@ -9,6 +9,14 @@ export const PATTERN_INFO = {
     summary:
       "Walk through numbers one by one with a for/while loop, keeping a running answer (a count, a sum, a product).",
     spot: "The question says 'print all…', 'count…', 'sum of…' or works on numbers from 1 to N. One loop and one accumulator variable usually solve it.",
+  },
+  patterns: {
+    name: "Star Patterns",
+    emoji: "✦",
+    chip: "bg-[var(--color-accent-soft)] text-[var(--color-accent)] border-[var(--color-accent)]/20",
+    summary:
+      "Nested loops draw shapes: outer loop = rows, inner loop = spaces/stars on that row. Cleaner code uses '*' * count.",
+    spot: "The question asks to print a triangle, pyramid, diamond, hollow square, butterfly, or hourglass of stars for N rows.",
   },
   math: {
     name: "Math Tricks & Formulas",
@@ -193,6 +201,7 @@ const P = {};
 const assign = (ids, key) => ids.forEach((i) => (P[i] = key));
 
 assign([1, 2, 3, 5, 7], "loops");
+assign([151, 152, 153, 154, 155, 156, 157, 158, 159, 160], "patterns");
 assign([4, 6, 13, 14, 15, 16, 17, 18, 20, 32, 142, 143], "math");
 assign([8, 9, 10, 11, 12, 19], "digits");
 assign([21, 22, 23, 25, 26, 101], "traversal");

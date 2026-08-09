@@ -1,13 +1,13 @@
 # PyPrep — Python Interview Mastery
 
-A learning web app built from the "150 Python Interview Questions with Solutions" PDF.
-Learn all 150 questions in 30 days with a guided plan, visual explanations, and an
-in-browser Python editor.
+A learning web app built from the "150 Python Interview Questions with Solutions" PDF,
+plus extra Basics star-pattern drills. Learn with a guided plan, visual explanations,
+and an in-browser Python editor.
 
 ## Features
 
 - **Dashboard** — daily goal (5 questions/day), streak tracker, progress by topic
-- **30-Day Plan** — 150 questions split into 30 days of 5, with per-day progress
+- **30-Day Plan** — questions split across 30 days (~5/day; Days 1–2 include star patterns)
 - **All Questions** — search + filter by topic, difficulty, and completion status
 - **Question pages** — problem, plain-language idea, "Simple way" vs "Smart way ⚡"
   solutions with syntax-highlighted code, complexity explained simply, personal notes
