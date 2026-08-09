@@ -1,10 +1,10 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import questions from "../data/questions.json";
-import CodeBlock from "../components/CodeBlock.jsx";
 import CodeVisualizer from "../components/CodeVisualizer.jsx";
 import DifficultyBadge from "../components/DifficultyBadge.jsx";
 import PyRunner from "../components/PyRunner.jsx";
+import TeachCode from "../components/TeachCode.jsx";
 import { VIZ_BY_CONCEPT } from "../components/visualizers.jsx";
 import { leetcodeLink } from "../data/leetcode.js";
 import { patternOf } from "../data/patterns.js";
@@ -13,16 +13,8 @@ import { useProgress, isDone, progressStore } from "../lib/progress.js";
 
 function practiceCode(q) {
   const code = q.optimized.code || q.bruteForce.code;
-  const m = code.match(/def\s+([a-zA-Z_]\w*)\s*\(([^)]*)\)/);
-  const name = m ? m[1] : "your_function";
-  const params = m ? m[2].trim() : "";
-  const sample = params
-    ? params.split(",").map(() => "…").join(", ")
-    : "";
-  return (
-    code +
-    `\n\n# Try your own input, then press Run\nprint(${name}(${sample.replace(/…/g, "10")}))\n`
-  );
+  const call = sampleCall(code, q.title);
+  return `${code}\n\n# Try your own input, then press Run\n${call}\n`;
 }
 
 export default function QuestionDetail() {
@@ -33,6 +25,13 @@ export default function QuestionDetail() {
   const [view, setView] = useState("code");
   const [showViz, setShowViz] = useState(false);
   const [showPractice, setShowPractice] = useState(false);
+
+  useEffect(() => {
+    setTab("optimized");
+    setView("code");
+    setShowViz(false);
+    setShowPractice(false);
+  }, [qid]);
 
   const q = useMemo(() => questions.find((x) => x.id === qid), [qid]);
   if (!q) {
@@ -235,7 +234,7 @@ export default function QuestionDetail() {
         </div>
 
         {view === "code" ? (
-          <CodeBlock code={approach.code} />
+          <TeachCode approach={approach} kind={tab} />
         ) : (
           <CodeVisualizer
             key={tab + qid}
@@ -304,7 +303,7 @@ export default function QuestionDetail() {
         </div>
         {showPractice && (
           <div className="mt-4">
-            <PyRunner initialCode={practiceCode(q)} />
+            <PyRunner key={qid} initialCode={practiceCode(q)} />
           </div>
         )}
       </section>

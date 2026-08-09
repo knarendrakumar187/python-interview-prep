@@ -8,5 +8,6 @@ dist
 .idea
 scripts/questions_raw.json
 scripts/sample_layout.txt
+scripts/teach_sample.txt
 __pycache__
 *.pyc

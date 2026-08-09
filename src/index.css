@@ -86,7 +86,11 @@ pre.code-panel {
 .code-panel .token.string,
 .code-panel .token.triple-quoted-string { color: #d4b06a; }
 .code-panel .token.number { color: #e09a6a; }
-.code-panel .token.comment { color: #6b7a74; font-style: italic; }
+.code-panel .token.comment {
+  color: #9ad4c0;
+  font-style: italic;
+  opacity: 0.95;
+}
 .code-panel .token.operator { color: #9ad4c0; }
 .code-panel .token.builtin { color: #c9b06a; }
 .code-panel .token.boolean { color: #e09a6a; }

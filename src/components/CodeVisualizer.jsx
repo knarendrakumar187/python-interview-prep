@@ -288,7 +288,7 @@ export default function CodeVisualizer({ code, initialCall }) {
             ) : (
               changes.slice(0, 3).map((c) => (
                 <span key={c.name} className="text-[var(--color-warn)] font-semibold">
-                  {c.name}: {c.from !== undefined ? `${c.from} → ` : "created = "}{c.to}
+                  {c.name}: {c.from !== undefined ? `${c.from} -> ` : "created = "}{c.to}
                 </span>
               ))
             )}
