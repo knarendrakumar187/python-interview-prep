@@ -1,9 +1,15 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import questions from "../data/questions.json";
 import { CORE_PLAN } from "../data/corePlan.js";
 import SUBJECTS, { getSubject } from "../data/coreSubjects.js";
-import { useProgress, isDone, isCoreDone } from "../lib/progress.js";
+import NC from "../data/neetcode250.json";
+import {
+  useProgress,
+  isCoreDone,
+  isRoadmapDone,
+  progressStore,
+} from "../lib/progress.js";
+import SaveProgressBanner from "../components/SaveProgressBanner.jsx";
 
 const SUBJECT_LABEL = {
   oops: "OOPs",
@@ -13,59 +19,197 @@ const SUBJECT_LABEL = {
   mixed: "Review",
 };
 
+const DIFF_CLS = {
+  Easy: "text-[var(--color-accent)]",
+  Medium: "text-[var(--color-warn)]",
+  Hard: "text-[var(--color-danger)]",
+};
+
 function conceptTitle(subjectId, conceptId) {
   const s = getSubject(subjectId);
   return s?.concepts.find((c) => c.id === conceptId)?.title || conceptId;
 }
 
-function PythonPlan({ p }) {
-  const days = Array.from({ length: 30 }, (_, i) => {
-    const day = i + 1;
-    const qs = questions.filter((q) => q.day === day);
-    const done = qs.filter((q) => isDone(p, q.id)).length;
-    return { day, qs, done };
-  });
-  const currentDay = days.find((d) => d.done < d.qs.length)?.day ?? 30;
+const problemById = Object.fromEntries(NC.problems.map((p) => [p.id, p]));
+
+function NeetCodePlan({ p }) {
+  const [view, setView] = useState("topics"); // topics | days
+  const [openCat, setOpenCat] = useState(NC.categories[0] || null);
+
+  const doneCount = useMemo(
+    () => NC.problems.filter((pr) => isRoadmapDone(p, pr)).length,
+    [p]
+  );
+
+  const byCategory = useMemo(() => {
+    return NC.categories.map((cat) => {
+      const items = NC.problems.filter((pr) => pr.category === cat);
+      const done = items.filter((pr) => isRoadmapDone(p, pr)).length;
+      return { cat, items, done, total: items.length };
+    });
+  }, [p]);
+
+  const dayRows = useMemo(() => {
+    return NC.days.map((d) => {
+      const items = d.problemIds.map((id) => problemById[id]).filter(Boolean);
+      const done = items.filter((pr) => isRoadmapDone(p, pr)).length;
+      return { ...d, items, done, total: items.length };
+    });
+  }, [p]);
+
+  const focusDay = dayRows.find((d) => d.done < d.total)?.day ?? NC.days.length;
 
   return (
     <>
-      <p className="text-[var(--color-ink-soft)] text-sm mb-6 max-w-2xl leading-relaxed">
-        About five coding questions a day (Days 1–2 also include star patterns).
-        Miss a day — pick up where you left off.
+      <p className="text-[var(--color-ink-soft)] text-sm mb-4 max-w-2xl leading-relaxed">
+        NeetCode 250 roadmap — {NC.total} interview problems across {NC.categories.length}{" "}
+        topics. ~2 problems/day for {NC.days.length} days. Open LeetCode to solve; mark done
+        here. Problems that match our in-app Python questions link locally.
       </p>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {days.map(({ day, qs, done }) => {
-          const complete = qs.length > 0 && done === qs.length;
-          const isCurrent = day === currentDay;
-          return (
-            <DayCard
-              key={day}
-              day={day}
-              done={done}
-              total={qs.length}
-              complete={complete}
-              isCurrent={isCurrent}
-              badge={qs[0]?.sectionName?.split(" ")[0] || "Day"}
+
+      <div className="flex flex-wrap items-center gap-3 mb-5">
+        <div className="panel px-3 py-2 text-sm font-mono">
+          <span className="text-[var(--color-accent)] font-bold">{doneCount}</span>
+          <span className="text-[var(--color-ink-soft)]"> / {NC.total} solved</span>
+        </div>
+        <div className="flex gap-1 p-1 border border-[var(--color-line)] rounded-[4px] bg-[var(--color-paper)]">
+          {[
+            ["topics", "By topic"],
+            ["days", "By day"],
+          ].map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setView(id)}
+              className={`px-2.5 py-1 text-[11px] font-semibold rounded-[3px] ${
+                view === id
+                  ? "bg-[var(--color-ink)] text-white"
+                  : "text-[var(--color-ink-soft)]"
+              }`}
             >
-              {qs.map((q) => (
-                <Link
-                  key={q.id}
-                  to={`/questions/${q.id}`}
-                  className={`flex items-center gap-2 text-xs px-1.5 py-1.5 hover:bg-[var(--color-paper)] transition ${
-                    isDone(p, q.id) ? "text-[var(--color-ink-soft)]" : "text-[var(--color-ink)]"
-                  }`}
-                >
-                  <Check on={isDone(p, q.id)} />
-                  <span className={isDone(p, q.id) ? "line-through" : ""}>
-                    Q{q.id}. {q.title}
-                  </span>
-                </Link>
-              ))}
-            </DayCard>
-          );
-        })}
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
+
+      {view === "topics" ? (
+        <div className="space-y-2">
+          {byCategory.map(({ cat, items, done, total }) => {
+            const open = openCat === cat;
+            return (
+              <div key={cat} className="panel overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setOpenCat(open ? null : cat)}
+                  className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-[var(--color-paper)]/60 transition"
+                >
+                  <div>
+                    <div className="text-sm font-bold">{cat}</div>
+                    <div className="text-[11px] font-mono text-[var(--color-ink-soft)] mt-0.5">
+                      {done}/{total}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <div className="w-20 h-1.5 bg-[var(--color-paper)] overflow-hidden hidden sm:block">
+                      <div
+                        className="h-full bg-[var(--color-accent)]"
+                        style={{ width: `${total ? (done / total) * 100 : 0}%` }}
+                      />
+                    </div>
+                    <span className="text-[var(--color-ink-soft)] text-xs">{open ? "−" : "+"}</span>
+                  </div>
+                </button>
+                {open && (
+                  <div className="border-t border-[var(--color-line)] px-2 py-2 space-y-0.5">
+                    {items.map((pr) => (
+                      <ProblemRow key={pr.slug} problem={pr} p={p} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {dayRows.map((d) => {
+            const complete = d.done === d.total;
+            const isCurrent = d.day === focusDay;
+            return (
+              <DayCard
+                key={d.day}
+                day={d.day}
+                done={d.done}
+                total={d.total}
+                complete={complete}
+                isCurrent={isCurrent}
+                badge={d.category.split(" ")[0]}
+              >
+                <div className="text-[10px] text-[var(--color-ink-soft)] px-1.5 mb-1 truncate">
+                  {d.category}
+                </div>
+                {d.items.map((pr) => (
+                  <ProblemRow key={pr.slug} problem={pr} p={p} compact />
+                ))}
+              </DayCard>
+            );
+          })}
+        </div>
+      )}
     </>
+  );
+}
+
+function ProblemRow({ problem, p, compact }) {
+  const done = isRoadmapDone(p, problem);
+  const href = problem.localQuestionId
+    ? `#/questions/${problem.localQuestionId}`
+    : problem.leetcodeUrl;
+
+  return (
+    <div
+      className={`flex items-center gap-2 text-xs px-1.5 py-1.5 rounded-[3px] ${
+        compact ? "" : "hover:bg-[var(--color-paper)]"
+      }`}
+    >
+      <button
+        type="button"
+        title={done ? "Mark undone" : "Mark done"}
+        onClick={() => progressStore.toggleRoadmapComplete(problem.slug)}
+        className="shrink-0"
+      >
+        <Check on={done} />
+      </button>
+      {problem.localQuestionId ? (
+        <Link
+          to={`/questions/${problem.localQuestionId}`}
+          className={`flex-1 min-w-0 truncate ${
+            done ? "text-[var(--color-ink-soft)] line-through" : "text-[var(--color-ink)]"
+          }`}
+        >
+          {problem.name}
+          <span className="ml-1 text-[10px] text-[var(--color-accent)] font-semibold">
+            In-app
+          </span>
+        </Link>
+      ) : (
+        <a
+          href={href}
+          target="_blank"
+          rel="noreferrer"
+          className={`flex-1 min-w-0 truncate ${
+            done ? "text-[var(--color-ink-soft)] line-through" : "text-[var(--color-ink)]"
+          }`}
+        >
+          {problem.name}
+          <span className="opacity-40 ml-1">↗</span>
+        </a>
+      )}
+      <span className={`shrink-0 text-[10px] font-semibold ${DIFF_CLS[problem.difficulty] || ""}`}>
+        {problem.difficulty?.[0] || "?"}
+      </span>
+    </div>
   );
 }
 
@@ -224,7 +368,7 @@ function DayCard({ day, done, total, complete, isCurrent, badge, children }) {
 function Check({ on }) {
   return (
     <span
-      className={`w-3 h-3 shrink-0 border ${
+      className={`w-3 h-3 shrink-0 border inline-block ${
         on ? "bg-[var(--color-accent)] border-[var(--color-accent)]" : "border-[var(--color-line)]"
       }`}
     />
@@ -237,16 +381,18 @@ export default function Plan() {
 
   return (
     <div className="fade-up">
-      <h1 className="font-display text-3xl font-bold">30-Day Plan</h1>
+      <h1 className="font-display text-3xl font-bold">Study Plan</h1>
       <p className="text-[var(--color-ink-soft)] text-sm mt-2 mb-5 max-w-2xl leading-relaxed">
-        Two tracks: Core CS subjects for interviews, and Python coding questions.
+        Two tracks: Core CS subjects (30 days), and the NeetCode 250 coding roadmap.
         Follow either — or both in parallel.
       </p>
+
+      <SaveProgressBanner className="mb-6" />
 
       <div className="flex flex-wrap gap-1 mb-6 border border-[var(--color-line)] p-1 rounded-[4px] w-fit bg-[var(--color-paper)]">
         {[
           ["core", "Core Subjects"],
-          ["python", "Python Coding"],
+          ["coding", "NeetCode 250"],
         ].map(([id, label]) => (
           <button
             key={id}
@@ -263,7 +409,7 @@ export default function Plan() {
         ))}
       </div>
 
-      {track === "core" ? <CorePlanView p={p} /> : <PythonPlan p={p} />}
+      {track === "core" ? <CorePlanView p={p} /> : <NeetCodePlan p={p} />}
     </div>
   );
 }

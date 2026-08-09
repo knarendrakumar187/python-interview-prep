@@ -1,4 +1,5 @@
 // Progress store persisted to localStorage, exposed as a React hook.
+// When signed in, AuthProvider also mirrors changes to Firestore.
 import { useSyncExternalStore } from "react";
 
 const KEY = "pyprep-progress-v1";
@@ -9,6 +10,7 @@ const defaultState = {
   notes: {}, // { [questionId]: "..." }
   startDate: null, // first day the user completed something
   coreCompleted: {}, // { "oops:classes-objects": "2026-08-09" }
+  roadmapCompleted: {}, // { [neetcodeSlug]: "2026-08-09" }
 };
 
 let state = load();
@@ -42,6 +44,20 @@ export const progressStore = {
   },
   get() {
     return state;
+  },
+  /** Replace in-memory + localStorage (used after cloud merge). */
+  replaceState(next) {
+    state = {
+      ...defaultState,
+      ...(next || {}),
+      completed: { ...(next?.completed || {}) },
+      coreCompleted: { ...(next?.coreCompleted || {}) },
+      roadmapCompleted: { ...(next?.roadmapCompleted || {}) },
+      notes: { ...(next?.notes || {}) },
+      bookmarks: Array.isArray(next?.bookmarks) ? [...next.bookmarks] : [],
+      startDate: next?.startDate || null,
+    };
+    save();
   },
   toggleComplete(id) {
     const completed = { ...state.completed };
@@ -79,6 +95,17 @@ export const progressStore = {
     };
     save();
   },
+  toggleRoadmapComplete(slug) {
+    const roadmapCompleted = { ...(state.roadmapCompleted || {}) };
+    if (roadmapCompleted[slug]) delete roadmapCompleted[slug];
+    else roadmapCompleted[slug] = todayStr();
+    state = {
+      ...state,
+      roadmapCompleted,
+      startDate: state.startDate ?? todayStr(),
+    };
+    save();
+  },
   reset() {
     state = { ...defaultState };
     save();
@@ -103,6 +130,14 @@ export function isCoreDone(p, subjectId, conceptId) {
   return Boolean((p.coreCompleted || {})[`${subjectId}:${conceptId}`]);
 }
 
+export function isRoadmapDone(p, problem) {
+  if (!problem) return false;
+  if ((p.roadmapCompleted || {})[problem.slug]) return true;
+  if (problem.localQuestionId != null && p.completed?.[problem.localQuestionId])
+    return true;
+  return false;
+}
+
 export function coreDoneCount(p, subject) {
   const map = p.coreCompleted || {};
   return subject.concepts.filter((c) => map[`${subject.id}:${c.id}`]).length;
@@ -110,7 +145,10 @@ export function coreDoneCount(p, subject) {
 
 /** Consecutive-day streak ending today or yesterday. */
 export function streak(p) {
-  const days = new Set(Object.values(p.completed));
+  const days = new Set([
+    ...Object.values(p.completed || {}),
+    ...Object.values(p.coreCompleted || {}),
+  ]);
   if (days.size === 0) return 0;
   let count = 0;
   const cursor = new Date();

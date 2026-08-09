@@ -5,6 +5,7 @@ import SUBJECTS from "../data/coreSubjects.js";
 import Logo from "./Logo.jsx";
 import CoreMegaMenu from "./core/CoreMegaMenu.jsx";
 import { useProgress, completedCount, streak } from "../lib/progress.js";
+import { useAuth } from "../lib/auth.jsx";
 
 const GITHUB_URL = "https://github.com/knarendrakumar187/python-interview-prep";
 
@@ -72,6 +73,70 @@ function navLabel(item) {
   return item.label;
 }
 
+function AccountLink({ dark }) {
+  const { user, configured } = useAuth();
+  if (!configured && !user) {
+    return (
+      <NavLink
+        to="/account"
+        className={
+          dark
+            ? "text-[#a7b5ae] hover:text-white text-sm transition"
+            : "text-[var(--color-ink-soft)] hover:text-[var(--color-accent)] text-xs font-semibold"
+        }
+      >
+        Account
+      </NavLink>
+    );
+  }
+  if (user) {
+    const initial = (user.displayName || user.email || "?").charAt(0).toUpperCase();
+    return (
+      <NavLink
+        to="/account"
+        title={user.email || "Account"}
+        className={`inline-flex items-center gap-2 ${
+          dark
+            ? "text-[#a7b5ae] hover:text-white"
+            : "text-[var(--color-ink-soft)] hover:text-[var(--color-accent)]"
+        } transition`}
+      >
+        {user.photoURL ? (
+          <img
+            src={user.photoURL}
+            alt=""
+            className="w-7 h-7 rounded-full border border-white/20"
+            referrerPolicy="no-referrer"
+          />
+        ) : (
+          <span
+            className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
+              dark ? "bg-[var(--color-accent)] text-white" : "bg-[var(--color-ink)] text-white"
+            }`}
+          >
+            {initial}
+          </span>
+        )}
+        <span className="text-sm font-semibold hidden sm:inline truncate max-w-[100px]">
+          {user.displayName?.split(" ")[0] || "Account"}
+        </span>
+      </NavLink>
+    );
+  }
+  return (
+    <NavLink
+      to="/account"
+      className={
+        dark
+          ? "text-xs font-semibold px-2.5 py-1.5 border border-white/20 text-white hover:border-[var(--color-accent)] rounded-[3px] transition"
+          : "text-xs font-semibold text-[var(--color-accent)] hover:underline"
+      }
+    >
+      Sign in
+    </NavLink>
+  );
+}
+
 export default function Layout({ children }) {
   const p = useProgress();
   const done = completedCount(p);
@@ -128,6 +193,7 @@ export default function Layout({ children }) {
               />
             </div>
           </div>
+          <AccountLink dark />
           <a
             href={GITHUB_URL}
             target="_blank"
@@ -140,10 +206,13 @@ export default function Layout({ children }) {
         </div>
       </aside>
 
-      <header className="md:hidden fixed top-0 inset-x-0 z-40 bg-[var(--color-ink)] text-white px-3 h-12 flex items-center justify-between safe-top">
+      <header className="md:hidden fixed top-0 inset-x-0 z-40 bg-[var(--color-ink)] text-white px-3 h-12 flex items-center justify-between safe-top gap-2">
         <Logo tone="dark" size="sm" />
-        <div className="text-[11px] font-mono text-[#8ecbb4]">
-          {done}/{questions.length} · {stk}d
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="text-[11px] font-mono text-[#8ecbb4]">
+            {done}/{questions.length} · {stk}d
+          </div>
+          <AccountLink dark />
         </div>
       </header>
 
@@ -210,6 +279,12 @@ export default function Layout({ children }) {
                       : item.label}
                   </NavLink>
                 ))}
+                <NavLink
+                  to="/account"
+                  className="text-[var(--color-ink-soft)] hover:text-[var(--color-accent)] transition"
+                >
+                  Account
+                </NavLink>
               </div>
               <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] justify-end">
                 {SUBJECTS.map((s) => (
