@@ -371,12 +371,509 @@ export function SortingViz() {
   );
 }
 
+/* ---------------- 8. Star patterns ---------------- */
+
+export function StarPatternViz() {
+  const N = 5;
+  const steps = [
+    {
+      row: 0,
+      caption: "Pyramid: for each row i, print (N−i) spaces then (2i−1) stars.",
+    },
+  ];
+  for (let i = 1; i <= N; i++) {
+    steps.push({
+      row: i,
+      caption: `Row ${i}: ${" ".repeat(N - i).replace(/ /g, "·")}${"*".repeat(2 * i - 1)}  →  spaces=${N - i}, stars=${2 * i - 1}.`,
+    });
+  }
+  steps.push({
+    row: N,
+    done: true,
+    caption: "Interview tip: say the formulas first, then code one print per row with '*' * count.",
+  });
+
+  return (
+    <VizShell
+      title="Star pattern — centered pyramid"
+      steps={steps}
+      speed={700}
+      render={(s) => (
+        <div className="font-mono text-sm leading-relaxed text-center w-full">
+          {Array.from({ length: N }, (_, k) => k + 1).map((i) => {
+            const visible = i <= s.row;
+            const spaces = N - i;
+            const stars = 2 * i - 1;
+            return (
+              <div
+                key={i}
+                className={`transition-opacity duration-300 ${
+                  visible ? "opacity-100" : "opacity-15"
+                } ${i === s.row && !s.done ? "text-[var(--color-accent)] font-bold" : "text-[var(--color-ink)]"}`}
+              >
+                <span className="text-[#b7c4be]">{"·".repeat(spaces)}</span>
+                {"*".repeat(stars)}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    />
+  );
+}
+
+/* ---------------- 9. Hash map frequency ---------------- */
+
+export function HashMapViz() {
+  const chars = ["a", "b", "a", "c", "b", "a"];
+  const steps = [{ i: -1, map: {}, caption: "Count letters with a dict: one pass, O(1) average updates." }];
+  const map = {};
+  chars.forEach((ch, i) => {
+    map[ch] = (map[ch] || 0) + 1;
+    steps.push({
+      i,
+      map: { ...map },
+      caption: `See '${ch}' → map['${ch}'] = ${map[ch]}. Have I seen this before? Dict answers instantly.`,
+    });
+  });
+  steps.push({
+    i: chars.length - 1,
+    map: { ...map },
+    done: true,
+    caption: "Done in one pass. Interview words: frequency, duplicate, anagram → think hash map.",
+  });
+
+  return (
+    <VizShell
+      title="Hash map — count frequencies"
+      steps={steps}
+      speed={850}
+      render={(s) => (
+        <div className="flex flex-col sm:flex-row items-center gap-5 w-full justify-center">
+          <div className="flex gap-1.5">
+            {chars.map((ch, idx) => (
+              <Cell
+                key={idx}
+                state={s.done ? "done" : idx === s.i ? "active" : idx < s.i ? "done" : "idle"}
+              >
+                {ch}
+              </Cell>
+            ))}
+          </div>
+          <div className="font-mono text-xs border border-[var(--color-line)] bg-[var(--color-paper)] px-3 py-2 min-w-28">
+            <div className="text-[10px] uppercase tracking-wide text-[var(--color-ink-soft)] mb-1">
+              map
+            </div>
+            {Object.keys(s.map).length === 0 && (
+              <span className="text-[var(--color-ink-soft)]">{"{}"}</span>
+            )}
+            {Object.entries(s.map).map(([k, v]) => (
+              <div key={k}>
+                '{k}': <span className="text-[var(--color-accent)] font-bold">{v}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    />
+  );
+}
+
+/* ---------------- 10. Stack / brackets ---------------- */
+
+export function StackViz() {
+  const expr = "([])";
+  const steps = [{ i: -1, stack: [], caption: "Valid parentheses: push opens, pop on close if it matches the top." }];
+  const stack = [];
+  const pairs = { ")": "(", "]": "[" };
+  for (let i = 0; i < expr.length; i++) {
+    const ch = expr[i];
+    if (ch === "(" || ch === "[") {
+      stack.push(ch);
+      steps.push({
+        i,
+        stack: [...stack],
+        caption: `'${ch}' is open → push onto the stack (most recent unfinished open).`,
+      });
+    } else {
+      const top = stack.pop();
+      steps.push({
+        i,
+        stack: [...stack],
+        caption: `'${ch}' is close → pop '${top}'. Matches? ${top === pairs[ch] ? "Yes." : "No."}`,
+      });
+    }
+  }
+  steps.push({
+    i: expr.length - 1,
+    stack: [],
+    done: true,
+    caption: "Stack empty at the end → balanced. LIFO is the interview keyword.",
+  });
+
+  return (
+    <VizShell
+      title="Stack — matching brackets"
+      steps={steps}
+      speed={900}
+      render={(s) => (
+        <div className="flex flex-col sm:flex-row items-center gap-6 w-full justify-center">
+          <div className="flex gap-1.5">
+            {expr.split("").map((ch, idx) => (
+              <Cell
+                key={idx}
+                state={s.done ? "done" : idx === s.i ? "active" : idx < s.i ? "done" : "idle"}
+              >
+                {ch}
+              </Cell>
+            ))}
+          </div>
+          <div className="flex flex-col-reverse gap-1 min-h-24 justify-end">
+            {s.stack.length === 0 && (
+              <div className="text-[11px] text-[var(--color-ink-soft)] font-mono">stack []</div>
+            )}
+            {s.stack.map((ch, idx) => (
+              <div
+                key={`${ch}-${idx}`}
+                className={`w-12 h-9 flex items-center justify-center font-mono font-bold border text-sm ${
+                  idx === s.stack.length - 1
+                    ? "bg-[var(--color-accent)] text-white border-[var(--color-accent)]"
+                    : "bg-[var(--color-paper)] border-[var(--color-line)]"
+                }`}
+              >
+                {ch}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    />
+  );
+}
+
+/* ---------------- 11. Linked list reverse ---------------- */
+
+export function LinkedListViz() {
+  const vals = [1, 2, 3, 4];
+  const steps = [
+    {
+      nodes: vals.map((v, i) => ({ v, next: i < vals.length - 1 ? i + 1 : null })),
+      prev: null,
+      cur: 0,
+      caption: "Reverse a linked list: three pointers — prev, cur, next. Rewire one link at a time.",
+    },
+  ];
+  let nodes = vals.map((v, i) => ({ v, next: i < vals.length - 1 ? i + 1 : null }));
+  let prev = null;
+  let cur = 0;
+  while (cur !== null) {
+    const next = nodes[cur].next;
+    steps.push({
+      nodes: nodes.map((n) => ({ ...n })),
+      prev,
+      cur,
+      next,
+      caption: `At node ${nodes[cur].v}: remember next, point cur→prev, then slide prev/cur forward.`,
+    });
+    nodes = nodes.map((n, i) => (i === cur ? { ...n, next: prev } : { ...n }));
+    steps.push({
+      nodes: nodes.map((n) => ({ ...n })),
+      prev: cur,
+      cur: next,
+      caption: `Link flipped for ${vals[cur]}. prev=${cur === null ? "∅" : vals[cur]}, cur=${next === null ? "∅" : vals[next]}.`,
+    });
+    prev = cur;
+    cur = next;
+  }
+  steps.push({
+    nodes: nodes.map((n) => ({ ...n })),
+    prev,
+    cur: null,
+    done: true,
+    caption: "Head is the old tail. Draw boxes and arrows in the interview before coding.",
+  });
+
+  return (
+    <VizShell
+      title="Linked list — reverse pointers"
+      steps={steps}
+      speed={1100}
+      render={(s) => {
+        const order = [];
+        let start = s.nodes.findIndex((n, i) => !s.nodes.some((o) => o.next === i));
+        if (start < 0) start = 0;
+        let t = start;
+        const seen = new Set();
+        while (t !== null && !seen.has(t)) {
+          seen.add(t);
+          order.push(t);
+          t = s.nodes[t].next;
+        }
+        return (
+          <div className="flex items-center gap-1 flex-wrap justify-center">
+            {order.map((idx, k) => (
+              <div key={idx} className="flex items-center gap-1">
+                <div
+                  className={`px-3 py-2 border font-mono text-sm font-bold ${
+                    idx === s.cur
+                      ? "bg-[var(--color-accent)] text-white border-[var(--color-accent)]"
+                      : idx === s.prev
+                      ? "bg-[var(--color-ink)] text-white border-[var(--color-ink)]"
+                      : "bg-[var(--color-paper)] border-[var(--color-line)]"
+                  }`}
+                >
+                  {s.nodes[idx].v}
+                </div>
+                {k < order.length - 1 && (
+                  <span className="text-[var(--color-ink-soft)] font-mono text-xs">→</span>
+                )}
+              </div>
+            ))}
+            <div className="w-full text-center text-[10px] font-mono text-[var(--color-ink-soft)] mt-2">
+              prev={s.prev === null || s.prev === undefined ? "∅" : s.nodes[s.prev]?.v} · cur=
+              {s.cur === null || s.cur === undefined ? "∅" : s.nodes[s.cur]?.v}
+            </div>
+          </div>
+        );
+      }}
+    />
+  );
+}
+
+/* ---------------- 12. DP table (stairs) ---------------- */
+
+export function DpViz() {
+  const n = 5;
+  const dp = Array(n + 1).fill(null);
+  dp[0] = 1;
+  dp[1] = 1;
+  const steps = [
+    {
+      dp: [...dp],
+      i: 1,
+      caption: "Climbing stairs: dp[i] = ways to reach step i. Base: dp[0]=1, dp[1]=1.",
+    },
+  ];
+  for (let i = 2; i <= n; i++) {
+    dp[i] = dp[i - 1] + dp[i - 2];
+    steps.push({
+      dp: [...dp],
+      i,
+      caption: `dp[${i}] = dp[${i - 1}] + dp[${i - 2}] = ${dp[i - 1]} + ${dp[i - 2]} = ${dp[i]}.`,
+    });
+  }
+  steps.push({
+    dp: [...dp],
+    i: n,
+    done: true,
+    caption: `Answer dp[${n}] = ${dp[n]}. Fill left→right so each state is computed once — that's DP.`,
+  });
+
+  return (
+    <VizShell
+      title="DP table — climbing stairs"
+      steps={steps}
+      speed={1000}
+      render={(s) => (
+        <div className="flex gap-2 items-end">
+          {s.dp.map((v, i) => (
+            <div key={i} className="flex flex-col items-center gap-1">
+              <div
+                className={`w-11 h-11 flex items-center justify-center border font-mono font-bold text-sm ${
+                  v === null
+                    ? "bg-white text-[#c2ccc7] border-[var(--color-line)]"
+                    : i === s.i
+                    ? "bg-[var(--color-accent)] text-white border-[var(--color-accent)]"
+                    : "bg-[var(--color-paper)] border-[var(--color-line)]"
+                }`}
+              >
+                {v === null ? "·" : v}
+              </div>
+              <span className="text-[10px] font-mono text-[var(--color-ink-soft)]">i={i}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    />
+  );
+}
+
+/* ---------------- 13. Bits / XOR ---------------- */
+
+export function BitViz() {
+  const nums = [4, 1, 2, 1, 2];
+  let x = 0;
+  const steps = [
+    { i: -1, x: 0, caption: "Find the unique number: XOR cancels pairs (a^a=0, a^0=a)." },
+  ];
+  nums.forEach((n, i) => {
+    const prev = x;
+    x ^= n;
+    steps.push({
+      i,
+      x,
+      caption: `${prev} XOR ${n} = ${x}. Pairs wipe out; the singleton survives.`,
+    });
+  });
+  steps.push({
+    i: nums.length - 1,
+    x,
+    done: true,
+    caption: `Leftover is ${x}. One pass, O(1) space — classic bit-trick interview answer.`,
+  });
+
+  return (
+    <VizShell
+      title="Bit trick — XOR for the singleton"
+      steps={steps}
+      speed={850}
+      render={(s) => (
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex gap-1.5">
+            {nums.map((n, idx) => (
+              <Cell
+                key={idx}
+                state={s.done ? "done" : idx === s.i ? "active" : idx < s.i ? "dim" : "idle"}
+              >
+                {n}
+              </Cell>
+            ))}
+          </div>
+          <div className="font-mono text-sm bg-[var(--color-ink)] text-[#8ecbb4] px-4 py-2">
+            xor = <span className="text-white font-bold">{s.x}</span>
+          </div>
+        </div>
+      )}
+    />
+  );
+}
+
+/* ---------------- 14. Graph BFS ---------------- */
+
+export function GraphBfsViz() {
+  const edges = { 0: [1, 2], 1: [3], 2: [3], 3: [] };
+  const steps = [
+    {
+      q: [0],
+      seen: [0],
+      cur: null,
+      caption: "BFS: queue + visited. Level-order explores closest nodes first — shortest path in unweighted graphs.",
+    },
+  ];
+  const q = [0];
+  const seen = new Set([0]);
+  while (q.length) {
+    const cur = q.shift();
+    steps.push({
+      q: [...q],
+      seen: [...seen],
+      cur,
+      caption: `Pop ${cur}. Visit neighbours ${edges[cur].join(", ") || "(none)"}.`,
+    });
+    for (const nb of edges[cur]) {
+      if (!seen.has(nb)) {
+        seen.add(nb);
+        q.push(nb);
+        steps.push({
+          q: [...q],
+          seen: [...seen],
+          cur,
+          highlight: nb,
+          caption: `Discover ${nb} — enqueue it. First time we reach a node is the shortest path.`,
+        });
+      }
+    }
+  }
+  steps.push({
+    q: [],
+    seen: [0, 1, 2, 3],
+    cur: null,
+    done: true,
+    caption: "Queue empty — traversal done. Interview: BFS = queue, DFS = stack/recursion.",
+  });
+
+  const pos = {
+    0: { x: 50, y: 8 },
+    1: { x: 20, y: 55 },
+    2: { x: 80, y: 55 },
+    3: { x: 50, y: 95 },
+  };
+
+  return (
+    <VizShell
+      title="Graph — BFS with a queue"
+      steps={steps}
+      speed={1000}
+      render={(s) => (
+        <div className="w-full max-w-xs mx-auto">
+          <svg viewBox="0 0 100 110" className="w-full h-36">
+            {Object.entries(edges).flatMap(([a, nbs]) =>
+              nbs.map((b) => (
+                <line
+                  key={`${a}-${b}`}
+                  x1={pos[a].x}
+                  y1={pos[a].y}
+                  x2={pos[b].x}
+                  y2={pos[b].y}
+                  stroke="#d5ddd9"
+                  strokeWidth="1.5"
+                />
+              ))
+            )}
+            {[0, 1, 2, 3].map((n) => {
+              const active = s.cur === n || s.highlight === n;
+              const seen = s.seen.includes(n);
+              return (
+                <g key={n}>
+                  <circle
+                    cx={pos[n].x}
+                    cy={pos[n].y}
+                    r="8"
+                    fill={active ? "#0f6e56" : seen ? "#1c2421" : "#f3f5f4"}
+                    stroke={active || seen ? "transparent" : "#d5ddd9"}
+                    strokeWidth="1.5"
+                  />
+                  <text
+                    x={pos[n].x}
+                    y={pos[n].y + 1}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize="7"
+                    fontFamily="JetBrains Mono, monospace"
+                    fill={active || seen ? "#fff" : "#1c2421"}
+                    fontWeight="700"
+                  >
+                    {n}
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
+          <div className="text-center text-[11px] font-mono text-[var(--color-ink-soft)]">
+            queue: [{(s.q || []).join(", ")}]
+          </div>
+        </div>
+      )}
+    />
+  );
+}
+
 export const VIZ_BY_CONCEPT = {
   loops: { component: LoopViz, name: "Loops" },
+  patterns: { component: StarPatternViz, name: "Star Patterns" },
   arrays: { component: ArrayViz, name: "Arrays & Two Pointers" },
   "two-pointers": { component: TwoPointerViz, name: "Two Pointers" },
   "sliding-window": { component: SlidingWindowViz, name: "Sliding Window" },
   recursion: { component: RecursionViz, name: "Recursion & Call Stack" },
   searching: { component: BinarySearchViz, name: "Binary Search" },
   sorting: { component: SortingViz, name: "Sorting" },
+  hashmap: { component: HashMapViz, name: "Hash Map" },
+  stack: { component: StackViz, name: "Stack" },
+  "linked-list": { component: LinkedListViz, name: "Linked List" },
+  dp: { component: DpViz, name: "Dynamic Programming" },
+  bits: { component: BitViz, name: "Bit Manipulation" },
+  graph: { component: GraphBfsViz, name: "Graph BFS" },
 };
+
+export const ALL_VIZ = VIZ_BY_CONCEPT;
+

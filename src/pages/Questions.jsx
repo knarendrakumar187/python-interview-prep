@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import questions from "../data/questions.json";
 import QuestionCard from "../components/QuestionCard.jsx";
 import { PATTERN_INFO, patternOf } from "../data/patterns.js";
@@ -17,11 +18,19 @@ const PATTERN_KEYS = ["all", ...Object.keys(PATTERN_INFO)];
 
 export default function Questions() {
   const p = useProgress();
+  const [params] = useSearchParams();
   const [section, setSection] = useState("all");
   const [pattern, setPattern] = useState("all");
   const [difficulty, setDifficulty] = useState("all");
   const [status, setStatus] = useState("all");
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    const s = params.get("section");
+    const pat = params.get("pattern");
+    if (s && SECTIONS.some((x) => x.key === s)) setSection(s);
+    if (pat && PATTERN_KEYS.includes(pat)) setPattern(pat);
+  }, [params]);
 
   const filtered = useMemo(() => {
     return questions.filter((q) => {
