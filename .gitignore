@@ -1,0 +1,12 @@
+node_modules
+dist
+.DS_Store
+*.local
+.env
+.env.*
+.vscode
+.idea
+scripts/questions_raw.json
+scripts/sample_layout.txt
+__pycache__
+*.pyc
