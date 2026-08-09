@@ -48,7 +48,10 @@ export default function CoreSubjects() {
               interviews — with visuals, labs, quizzes, and progress tracking.
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
-              <Link to="/core/oops" className="btn-primary bg-white text-[var(--color-ink)] hover:bg-[#e8ecea]">
+              <Link to="/plan" className="btn-primary bg-white text-[var(--color-ink)] hover:bg-[#e8ecea]">
+                30-day Core plan
+              </Link>
+              <Link to="/core/oops" className="btn-ghost border-white/25 text-white hover:border-white hover:text-white">
                 Start with OOPs
               </Link>
               <a href="#subjects" className="btn-ghost border-white/25 text-white hover:border-white hover:text-white">
