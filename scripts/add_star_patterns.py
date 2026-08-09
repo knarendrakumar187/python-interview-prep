@@ -64,14 +64,15 @@ def make_q(qid, title, question, day, bf_code, bf_logic, bf_drawback, opt_code, 
         },
         "complexity": {
             "time": [
-                {"label": "Brute Force", "value": "O(N²)"},
-                {"label": "Optimized", "value": "O(N²)"},
+                {"label": "Brute Force", "value": "O(N^2)"},
+                {"label": "Optimized", "value": "O(N^2)"},
             ],
             "space": [
                 {"label": "Brute Force", "value": "O(1)"},
                 {"label": "Optimized", "value": "O(N) for row strings"},
             ],
-            "notes": "Must print ~N² stars, so O(N²) time is expected. Optimization is cleaner code, not a better big-O.",
+            "cases": [],
+            "notes": "Must print ~N^2 stars, so O(N^2) time is expected. Optimization is cleaner code, not a better big-O.",
         },
     }
 

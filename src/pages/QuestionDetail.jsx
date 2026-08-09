@@ -277,10 +277,15 @@ export default function QuestionDetail() {
           <ComplexityCard title="Time" items={q.complexity.time} />
           <ComplexityCard title="Space" items={q.complexity.space} />
         </div>
-        {q.complexity.cases.length > 0 && (
+        {(q.complexity.cases?.length ?? 0) > 0 && (
           <div className="mt-3">
             <ComplexityCard title="Best / average / worst" items={q.complexity.cases} />
           </div>
+        )}
+        {q.complexity.notes && (
+          <p className="text-sm text-[var(--color-ink-soft)] mt-3 leading-relaxed">
+            {q.complexity.notes}
+          </p>
         )}
       </section>
 
@@ -338,7 +343,7 @@ export default function QuestionDetail() {
   );
 }
 
-function ComplexityCard({ title, items }) {
+function ComplexityCard({ title, items = [] }) {
   return (
     <div className="border border-[var(--color-line)] bg-[var(--color-paper)] p-4">
       <div className="text-xs font-bold uppercase tracking-wide text-[var(--color-ink-soft)] mb-2">

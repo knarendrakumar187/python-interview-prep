@@ -1043,7 +1043,7 @@
       "time": [
         {
           "label": "Brute Force",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         },
         {
           "label": "Optimized",
@@ -10821,11 +10821,11 @@
       "time": [
         {
           "label": "Brute Force",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         },
         {
           "label": "Optimized",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         }
       ],
       "space": [
@@ -10838,7 +10838,8 @@
           "value": "O(N) for row strings"
         }
       ],
-      "notes": "Must print ~N² stars, so O(N²) time is expected. Optimization is cleaner code, not a better big-O."
+      "notes": "Must print ~N^2 stars, so O(N^2) time is expected. Optimization is cleaner code, not a better big-O.",
+      "cases": []
     }
   },
   {
@@ -10877,11 +10878,11 @@
       "time": [
         {
           "label": "Brute Force",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         },
         {
           "label": "Optimized",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         }
       ],
       "space": [
@@ -10894,7 +10895,8 @@
           "value": "O(N) for row strings"
         }
       ],
-      "notes": "Must print ~N² stars, so O(N²) time is expected. Optimization is cleaner code, not a better big-O."
+      "notes": "Must print ~N^2 stars, so O(N^2) time is expected. Optimization is cleaner code, not a better big-O.",
+      "cases": []
     }
   },
   {
@@ -10933,11 +10935,11 @@
       "time": [
         {
           "label": "Brute Force",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         },
         {
           "label": "Optimized",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         }
       ],
       "space": [
@@ -10950,7 +10952,8 @@
           "value": "O(N) for row strings"
         }
       ],
-      "notes": "Must print ~N² stars, so O(N²) time is expected. Optimization is cleaner code, not a better big-O."
+      "notes": "Must print ~N^2 stars, so O(N^2) time is expected. Optimization is cleaner code, not a better big-O.",
+      "cases": []
     }
   },
   {
@@ -10989,11 +10992,11 @@
       "time": [
         {
           "label": "Brute Force",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         },
         {
           "label": "Optimized",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         }
       ],
       "space": [
@@ -11006,7 +11009,8 @@
           "value": "O(N) for row strings"
         }
       ],
-      "notes": "Must print ~N² stars, so O(N²) time is expected. Optimization is cleaner code, not a better big-O."
+      "notes": "Must print ~N^2 stars, so O(N^2) time is expected. Optimization is cleaner code, not a better big-O.",
+      "cases": []
     }
   },
   {
@@ -11044,11 +11048,11 @@
       "time": [
         {
           "label": "Brute Force",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         },
         {
           "label": "Optimized",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         }
       ],
       "space": [
@@ -11061,7 +11065,8 @@
           "value": "O(N) for row strings"
         }
       ],
-      "notes": "Must print ~N² stars, so O(N²) time is expected. Optimization is cleaner code, not a better big-O."
+      "notes": "Must print ~N^2 stars, so O(N^2) time is expected. Optimization is cleaner code, not a better big-O.",
+      "cases": []
     }
   },
   {
@@ -11099,11 +11104,11 @@
       "time": [
         {
           "label": "Brute Force",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         },
         {
           "label": "Optimized",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         }
       ],
       "space": [
@@ -11116,7 +11121,8 @@
           "value": "O(N) for row strings"
         }
       ],
-      "notes": "Must print ~N² stars, so O(N²) time is expected. Optimization is cleaner code, not a better big-O."
+      "notes": "Must print ~N^2 stars, so O(N^2) time is expected. Optimization is cleaner code, not a better big-O.",
+      "cases": []
     }
   },
   {
@@ -11155,11 +11161,11 @@
       "time": [
         {
           "label": "Brute Force",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         },
         {
           "label": "Optimized",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         }
       ],
       "space": [
@@ -11172,7 +11178,8 @@
           "value": "O(N) for row strings"
         }
       ],
-      "notes": "Must print ~N² stars, so O(N²) time is expected. Optimization is cleaner code, not a better big-O."
+      "notes": "Must print ~N^2 stars, so O(N^2) time is expected. Optimization is cleaner code, not a better big-O.",
+      "cases": []
     }
   },
   {
@@ -11210,11 +11217,11 @@
       "time": [
         {
           "label": "Brute Force",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         },
         {
           "label": "Optimized",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         }
       ],
       "space": [
@@ -11227,7 +11234,8 @@
           "value": "O(N) for row strings"
         }
       ],
-      "notes": "Must print ~N² stars, so O(N²) time is expected. Optimization is cleaner code, not a better big-O."
+      "notes": "Must print ~N^2 stars, so O(N^2) time is expected. Optimization is cleaner code, not a better big-O.",
+      "cases": []
     }
   },
   {
@@ -11267,11 +11275,11 @@
       "time": [
         {
           "label": "Brute Force",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         },
         {
           "label": "Optimized",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         }
       ],
       "space": [
@@ -11284,7 +11292,8 @@
           "value": "O(N) for row strings"
         }
       ],
-      "notes": "Must print ~N² stars, so O(N²) time is expected. Optimization is cleaner code, not a better big-O."
+      "notes": "Must print ~N^2 stars, so O(N^2) time is expected. Optimization is cleaner code, not a better big-O.",
+      "cases": []
     }
   },
   {
@@ -11322,11 +11331,11 @@
       "time": [
         {
           "label": "Brute Force",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         },
         {
           "label": "Optimized",
-          "value": "O(N²)"
+          "value": "O(N^2)"
         }
       ],
       "space": [
@@ -11339,7 +11348,8 @@
           "value": "O(N) for row strings"
         }
       ],
-      "notes": "Must print ~N² stars, so O(N²) time is expected. Optimization is cleaner code, not a better big-O."
+      "notes": "Must print ~N^2 stars, so O(N^2) time is expected. Optimization is cleaner code, not a better big-O.",
+      "cases": []
     }
   }
 ]
