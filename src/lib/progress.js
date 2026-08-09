@@ -8,6 +8,7 @@ const defaultState = {
   bookmarks: [],
   notes: {}, // { [questionId]: "..." }
   startDate: null, // first day the user completed something
+  coreCompleted: {}, // { "oops:classes-objects": "2026-08-09" }
 };
 
 let state = load();
@@ -67,6 +68,17 @@ export const progressStore = {
     state = { ...state, notes: { ...state.notes, [id]: text } };
     save();
   },
+  toggleCoreComplete(key) {
+    const coreCompleted = { ...(state.coreCompleted || {}) };
+    if (coreCompleted[key]) delete coreCompleted[key];
+    else coreCompleted[key] = todayStr();
+    state = {
+      ...state,
+      coreCompleted,
+      startDate: state.startDate ?? todayStr(),
+    };
+    save();
+  },
   reset() {
     state = { ...defaultState };
     save();
@@ -85,6 +97,15 @@ export function completedCount(p) {
 
 export function isDone(p, id) {
   return Boolean(p.completed[id]);
+}
+
+export function isCoreDone(p, subjectId, conceptId) {
+  return Boolean((p.coreCompleted || {})[`${subjectId}:${conceptId}`]);
+}
+
+export function coreDoneCount(p, subject) {
+  const map = p.coreCompleted || {};
+  return subject.concepts.filter((c) => map[`${subject.id}:${c.id}`]).length;
 }
 
 /** Consecutive-day streak ending today or yesterday. */

@@ -1,13 +1,14 @@
 import { useMemo, useState } from "react";
 import Prism from "prismjs";
 import "prismjs/components/prism-python";
+import "prismjs/components/prism-sql";
 
-export default function CodeBlock({ code }) {
+export default function CodeBlock({ code, language = "python" }) {
   const [copied, setCopied] = useState(false);
-  const html = useMemo(
-    () => Prism.highlight(code, Prism.languages.python, "python"),
-    [code]
-  );
+  const html = useMemo(() => {
+    const grammar = Prism.languages[language] || Prism.languages.python;
+    return Prism.highlight(code, grammar, language);
+  }, [code, language]);
 
   const copy = async () => {
     await navigator.clipboard.writeText(code);

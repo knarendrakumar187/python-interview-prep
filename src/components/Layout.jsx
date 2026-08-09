@@ -1,6 +1,7 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import questions from "../data/questions.json";
+import SUBJECTS from "../data/coreSubjects.js";
 import Logo from "./Logo.jsx";
 import { useProgress, completedCount, streak } from "../lib/progress.js";
 
@@ -42,6 +43,16 @@ const NAV = [
     ),
   },
   {
+    to: "/core",
+    label: "Core",
+    icon: (
+      <>
+        <path d="M4 6h16M4 12h10M4 18h13" />
+        <circle cx="18" cy="12" r="2" />
+      </>
+    ),
+  },
+  {
     to: "/concepts",
     label: "Concepts",
     icon: (
@@ -52,6 +63,78 @@ const NAV = [
     ),
   },
 ];
+
+function navLabel(item) {
+  if (item.label === "Home") return "Dashboard";
+  if (item.label === "Plan") return "30-Day Plan";
+  if (item.label === "Core") return "Core Subjects";
+  return item.label;
+}
+
+function CoreSubjectsMenu({ pathname }) {
+  const active = pathname.startsWith("/core");
+  const [open, setOpen] = useState(active);
+
+  useEffect(() => {
+    if (active) setOpen(true);
+  }, [active]);
+
+  return (
+    <div className="mt-1">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className={`w-full flex items-center justify-between px-3 py-2 text-sm transition border-l-2 ${
+          active
+            ? "border-[var(--color-accent)] text-white bg-white/5 font-semibold"
+            : "border-transparent text-[#a7b5ae] hover:text-white hover:bg-white/5"
+        }`}
+      >
+        <span>Core Subjects</span>
+        <span
+          className={`text-[10px] transition-transform ${open ? "rotate-180" : ""}`}
+        >
+          ▾
+        </span>
+      </button>
+      {open && (
+        <div className="ml-2 mt-0.5 mb-1 space-y-0.5 border-l border-white/10">
+          <NavLink
+            to="/core"
+            end
+            className={({ isActive }) =>
+              `block pl-3 pr-2 py-1.5 text-xs transition ${
+                isActive
+                  ? "text-[#7dceb4] font-semibold"
+                  : "text-[#8a9892] hover:text-white"
+              }`
+            }
+          >
+            All subjects
+          </NavLink>
+          {SUBJECTS.map((s) => (
+            <NavLink
+              key={s.id}
+              to={`/core/${s.id}`}
+              className={({ isActive }) =>
+                `block pl-3 pr-2 py-1.5 text-xs transition ${
+                  isActive
+                    ? "text-[#7dceb4] font-semibold"
+                    : "text-[#8a9892] hover:text-white"
+                }`
+              }
+            >
+              {s.name}
+              <span className="block text-[10px] text-[#6a7872] font-normal truncate">
+                {s.fullName}
+              </span>
+            </NavLink>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Layout({ children }) {
   const p = useProgress();
@@ -65,14 +148,13 @@ export default function Layout({ children }) {
 
   return (
     <div className="min-h-screen flex">
-      {/* Desktop sidebar */}
-      <aside className="hidden md:flex w-56 shrink-0 flex-col bg-[var(--color-ink)] text-[#c5d0cb] fixed inset-y-0">
+      <aside className="hidden md:flex w-60 shrink-0 flex-col bg-[var(--color-ink)] text-[#c5d0cb] fixed inset-y-0">
         <div className="px-4 h-16 flex items-center border-b border-white/10">
           <Logo tone="dark" size="md" showTagline />
         </div>
 
-        <nav className="flex-1 px-3 py-5 space-y-0.5">
-          {NAV.map((item) => (
+        <nav className="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto">
+          {NAV.filter((item) => item.to !== "/core").map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -85,9 +167,10 @@ export default function Layout({ children }) {
                 }`
               }
             >
-              {item.label === "Home" ? "Dashboard" : item.label === "Plan" ? "30-Day Plan" : item.label}
+              {navLabel(item)}
             </NavLink>
           ))}
+          <CoreSubjectsMenu pathname={pathname} />
         </nav>
 
         <div className="px-5 py-4 border-t border-white/10 text-xs space-y-3">
@@ -121,7 +204,6 @@ export default function Layout({ children }) {
         </div>
       </aside>
 
-      {/* Mobile top bar — brand + progress only */}
       <header className="md:hidden fixed top-0 inset-x-0 z-40 bg-[var(--color-ink)] text-white px-3 h-12 flex items-center justify-between safe-top">
         <Logo tone="dark" size="sm" />
         <div className="text-[11px] font-mono text-[#8ecbb4]">
@@ -129,22 +211,23 @@ export default function Layout({ children }) {
         </div>
       </header>
 
-      {/* Mobile bottom tab bar */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-[var(--color-ink)] border-t border-white/10 safe-bottom">
-        <div className="grid grid-cols-4 h-14">
+        <div className="grid grid-cols-5 h-14">
           {NAV.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               end={item.to === "/"}
               className={({ isActive }) =>
-                `flex flex-col items-center justify-center gap-0.5 text-[10px] font-semibold ${
-                  isActive ? "text-[#7dceb4]" : "text-[#8a9892]"
+                `flex flex-col items-center justify-center gap-0.5 text-[9px] font-semibold ${
+                  isActive || (item.to === "/core" && pathname.startsWith("/core"))
+                    ? "text-[#7dceb4]"
+                    : "text-[#8a9892]"
                 }`
               }
             >
               <svg
-                className="w-[18px] h-[18px]"
+                className="w-[17px] h-[17px]"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.8"
@@ -160,7 +243,7 @@ export default function Layout({ children }) {
         </div>
       </nav>
 
-      <main className="flex-1 md:ml-56 pt-12 pb-20 md:pt-0 md:pb-0 min-w-0 flex flex-col min-h-screen">
+      <main className="flex-1 md:ml-60 pt-12 pb-20 md:pt-0 md:pb-0 min-w-0 flex flex-col min-h-screen">
         <div className="max-w-5xl mx-auto px-3 sm:px-4 md:px-8 py-5 md:py-8 w-full flex-1">
           {children}
         </div>
@@ -170,13 +253,13 @@ export default function Layout({ children }) {
             <div className="min-w-0">
               <Logo tone="light" size="md" showTagline />
               <p className="text-xs text-[var(--color-ink-soft)] mt-3 leading-relaxed max-w-md">
-                {questions.length} Python interview questions · 30-day plan ·
+                {questions.length} Python interview questions · Core CS subjects ·
                 patterns, visuals, and in-browser practice.
               </p>
             </div>
 
             <div className="flex flex-col sm:items-end gap-3">
-              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs font-semibold">
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs font-semibold justify-end">
                 {NAV.map((item) => (
                   <NavLink
                     key={item.to}
@@ -186,9 +269,20 @@ export default function Layout({ children }) {
                   >
                     {item.label === "Home"
                       ? "Dashboard"
-                      : item.label === "Plan"
-                      ? "Plan"
+                      : item.label === "Core"
+                      ? "Core Subjects"
                       : item.label}
+                  </NavLink>
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] justify-end">
+                {SUBJECTS.map((s) => (
+                  <NavLink
+                    key={s.id}
+                    to={`/core/${s.id}`}
+                    className="text-[var(--color-ink-soft)] hover:text-[var(--color-accent)]"
+                  >
+                    {s.name}
                   </NavLink>
                 ))}
               </div>
@@ -202,9 +296,6 @@ export default function Layout({ children }) {
                 Star on GitHub
                 <span className="opacity-40">↗</span>
               </a>
-              <p className="text-[11px] text-[var(--color-ink-soft)] font-mono">
-                Open source · MIT-style learning project
-              </p>
             </div>
           </div>
         </footer>
